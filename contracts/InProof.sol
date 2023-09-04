@@ -32,6 +32,14 @@ contract InProof is ERC1155Burnable, Ownable, AccessControl {
         baseUri = _uri;
     }
 
+    function grantOperatorRole(address _account) public {
+        grantRole(OPERATOR_ROLE, _account);
+    }
+
+    function revokeOperatorRole(address _account) public {
+        revokeRole(OPERATOR_ROLE, _account);
+    }
+
     // SBT
     function setApprovalForAll(address, bool) public pure override {
         revert("setApprovalForAll is prohibited");
