@@ -2,10 +2,8 @@
 
 InProofのコントラクトです。
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
+## コントラクト
+
+goerli
+
+https://goerli.etherscan.io/address/0x4b5C4417C0719D4C7b7F036c46AaAA74d5C92009
