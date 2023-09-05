@@ -1,13 +1,17 @@
-const hre = require("hardhat");
+const { ethers } = require('hardhat');
+const { writeFileSync } = require('fs');
 
 async function main() {
-  const NFT = await hre.ethers.getContractFactory("InProof");
-
-  const nft = await NFT.deploy();
+  const Contract = await ethers.getContractFactory("InProof");
+  const nft = await Contract.deploy();
 
   await nft.deployed();
 
-  console.log("NFT deployed to:", nft.address);
+  writeFileSync('deploy.json', JSON.stringify({
+    Contract: nft.address,
+  }, null, 2));
+
+  console.log("✨ NFT deployed to:", nft.address);
 }
 
 main()

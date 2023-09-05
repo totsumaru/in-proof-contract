@@ -6,38 +6,32 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract InProof is ERC1155Burnable, Ownable, AccessControl {
+contract InProof is ERC1155Burnable, AccessControl {
     using Strings for uint256;
 
     string public name = "InProof";
     string public symbol = "IPF";
     string public baseUri;
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR");
+    string public baseExtension;
+    bytes32 public constant MINTER = keccak256("MINTER");
 
     constructor() ERC1155("") {
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(MINTER, msg.sender);
     }
 
-    function mint(address[] memory _toAddresses, uint256 id) external onlyRole(OPERATOR_ROLE) {
+    function mint(address[] memory _toAddresses, uint256 id) external onlyRole(MINTER) {
         for (uint256 i = 0; i < _toAddresses.length; i++) {
             _mint(_toAddresses[i], id, 1, "");
         }
     }
 
     function uri(uint256 _id) public override view returns (string memory) {
-        return string(abi.encodePacked(baseUri, _id.toString()));
+        return string(abi.encodePacked(baseUri, _id.toString(), baseExtension));
     }
 
-    function setBaseUri(string memory _uri) external onlyOwner {
+    function setBaseUri(string memory _uri) external onlyRole(DEFAULT_ADMIN_ROLE) {
         baseUri = _uri;
-    }
-
-    function grantOperatorRole(address _account) public {
-        grantRole(OPERATOR_ROLE, _account);
-    }
-
-    function revokeOperatorRole(address _account) public {
-        revokeRole(OPERATOR_ROLE, _account);
     }
 
     // SBT
@@ -45,6 +39,7 @@ contract InProof is ERC1155Burnable, Ownable, AccessControl {
         revert("setApprovalForAll is prohibited");
     }
 
+    // SBT
     function _beforeTokenTransfer(
         address operator,
         address from,
