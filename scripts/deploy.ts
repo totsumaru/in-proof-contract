@@ -1,5 +1,7 @@
+import { network } from 'hardhat';
+import fs from 'fs';
+
 const { ethers } = require('hardhat');
-const { writeFileSync } = require('fs');
 
 async function main() {
   const Contract = await ethers.getContractFactory("InProof");
@@ -7,11 +9,22 @@ async function main() {
 
   await nft.deployed();
 
-  writeFileSync('deploy.json', JSON.stringify({
-    Contract: nft.address,
-  }, null, 2));
+  const deployPath = 'deploy.json';
+  let deployData: Record<string, string> = {};
 
-  console.log("✨ NFT deployed to:", nft.address);
+  // Check if deploy.json exists and read it
+  if (fs.existsSync(deployPath)) {
+    const rawData = fs.readFileSync(deployPath, 'utf8');
+    deployData = JSON.parse(rawData);
+  }
+
+  // Update the entry for the current network
+  deployData[network.name] = nft.address;
+
+  // Write the updated data back to deploy.json
+  fs.writeFileSync(deployPath, JSON.stringify(deployData, null, 2));
+
+  console.log(`✨ NFT deployed to ${network.name}:`, nft.address);
 }
 
 main()
